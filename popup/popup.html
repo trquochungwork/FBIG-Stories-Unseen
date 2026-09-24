@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>FBIG Stories Unseen - Xem Tin Ẩn Danh</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(150deg, #161a22 0%, #11141a 100%);
+      --card-bg: rgba(28, 34, 45, 0.85);
+      --card-border: rgba(255, 255, 255, 0.08);
+      
+      --mint-primary: #34d399;
+      --mint-soft-glow: rgba(52, 211, 153, 0.3);
+      --coral-accent: #fb923c;
+      --sky-accent: #60a5fa;
+      
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --text-dim: #6b7280;
+      
+      --active-btn-bg: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+      --inactive-btn-bg: #272d38;
+      --inactive-color: #6b7280;
+      
+      --error-color: #f87171;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      width: 290px;
+      padding: 0;
+      user-select: none;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Hiệu ứng ánh sáng nền mềm mại */
+    .ambient-glow {
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 190px;
+      height: 190px;
+      background: radial-gradient(circle, var(--mint-soft-glow) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Thanh tiêu đề */
+    .header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: rgba(18, 22, 30, 0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: -0.2px;
+      color: var(--text-main);
+    }
+
+    .brand-logo {
+      width: 24px;
+      height: 24px;
+      border-radius: 7px;
+      object-fit: cover;
+      box-shadow: 0 2px 8px var(--mint-soft-glow);
+    }
+
+    .site-tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 20px;
+      background: rgba(96, 165, 250, 0.12);
+      color: var(--sky-accent);
+      border: 1px solid rgba(96, 165, 250, 0.2);
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .site-tag.error {
+      background: rgba(248, 113, 113, 0.12);
+      color: var(--error-color);
+      border-color: rgba(248, 113, 113, 0.25);
+    }
+
+    .container {
+      padding: 22px 18px 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+
+    /* Nút nguồn bật/tắt */
+    .power-section {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 4px 0;
+    }
+
+    .power-ring {
+      position: absolute;
+      width: 98px;
+      height: 98px;
+      border-radius: 50%;
+      background: var(--mint-primary);
+      opacity: 0.12;
+      transition: all 0.4s ease;
+      filter: blur(8px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .power-btn {
+      position: relative;
+      z-index: 10;
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      border: 2px solid var(--card-border);
+      background: var(--inactive-btn-bg);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      outline: none;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    .power-btn * {
+      pointer-events: none;
+    }
+
+    .power-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .power-btn:active {
+      transform: scale(0.95);
+    }
+
+    .power-btn svg {
+      width: 42px;
+      height: 42px;
+      fill: var(--inactive-color);
+      transition: all 0.3s ease;
+    }
+
+    /* Kiểu nút nguồn khi đang bật */
+    .power-btn.is-active {
+      background: var(--active-btn-bg);
+      border-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 10px 28px var(--mint-soft-glow);
+    }
+
+    .power-btn.is-active svg {
+      fill: #ffffff;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+    }
+
+    .power-btn.is-active ~ .power-ring {
+      opacity: 0.4;
+      transform: scale(1.15);
+    }
+
+    /* Huy hiệu trạng thái */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: rgba(39, 45, 56, 0.7);
+      color: var(--text-muted);
+      border: 1px solid var(--card-border);
+      transition: all 0.3s ease;
+    }
+
+    .status-badge .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--inactive-color);
+      transition: all 0.3s ease;
+    }
+
+    .status-badge.active {
+      background: rgba(52, 211, 153, 0.12);
+      color: var(--mint-primary);
+      border-color: rgba(52, 211, 153, 0.25);
+    }
+
+    .status-badge.active .dot {
+      background: var(--mint-primary);
+      box-shadow: 0 0 8px var(--mint-primary);
+    }
+
+    /* Thẻ thông tin */
+    .info-card {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px;
+      text-align: center;
+      backdrop-filter: blur(8px);
+    }
+
+    .info-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .platform-tags {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 6px 0 10px;
+    }
+
+    .tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .tag i {
+      color: var(--mint-primary);
+    }
+
+    .info-hint {
+      font-size: 10px;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .info-hint i {
+      color: var(--coral-accent);
+    }
+
+    /* Thanh chân trang */
+    .footer {
+      display: flex;
+      justify-content: space-around;
+      padding: 6px 10px;
+      background: rgba(14, 17, 23, 0.9);
+      border-top: 1px solid var(--card-border);
+    }
+
+    .footer button {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 15px;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .footer button:hover {
+      background: rgba(52, 211, 153, 0.12);
+      color: var(--mint-primary);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="ambient-glow"></div>
+  <div class="wrapper">
+    <!-- Thanh tiêu đề -->
+    <div class="header-bar">
+      <div class="brand">
+        <img class="brand-logo" src="../icons/icon-16.png" alt="Logo">
+        <span>XEM TIN ẨN DANH</span>
+      </div>
+      <div class="site-tag" id="site-header">unknown</div>
+    </div>
+
+    <!-- Nội dung chính -->
+    <div class="container">
+      <!-- Nút bật/tắt -->
+      <div class="power-section">
+        <button id="toggle-feature" class="power-btn" title="Bật / Tắt Bảo Vệ Ẩn Danh">
+          <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+            <path d="M432,448a15.92,15.92,0,0,1-11.31-4.69l-352-352A16,16,0,0,1,91.31,68.69l352,352A16,16,0,0,1,432,448Z"></path>
+            <path d="M248,315.85l-51.79-51.79a2,2,0,0,0-3.39,1.69,64.11,64.11,0,0,0,53.49,53.49A2,2,0,0,0,248,315.85Z"></path>
+            <path d="M264,196.15,315.87,248a2,2,0,0,0,3.4-1.69,64.13,64.13,0,0,0-53.55-53.55A2,2,0,0,0,264,196.15Z"></path>
+            <path d="M491,273.36a32.2,32.2,0,0,0-.1-34.76c-26.46-40.92-60.79-75.68-99.27-100.53C349,110.55,302,96,255.68,96a226.54,226.54,0,0,0-71.82,11.79,4,4,0,0,0-1.56,6.63l47.24,47.24a4,4,0,0,0,3.82,1.05,96,96,0,0,1,116,116,4,4,0,0,0,1.05,3.81l67.95,68a4,4,0,0,0,5.4.24A343.81,343.81,0,0,0,491,273.36Z"></path>
+            <path d="M256,352a96,96,0,0,1-93.3-118.63,4,4,0,0,0-1.05-3.81L94.81,162.69a4,4,0,0,0-5.41-.23c-24.39,20.81-47,46.13-67.67,75.72a31.92,31.92,0,0,0-.64,35.54c26.41,41.33,60.39,76.14,98.28,100.65C162.06,402,207.92,416,255.68,416a238.22,238.22,0,0,0,72.64-11.55,4,4,0,0,0,1.61-6.64l-47.47-47.46a4,4,0,0,0-3.81-1.05A96,96,0,0,1,256,352Z"></path>
+          </svg>
+        </button>
+        <div class="power-ring"></div>
+      </div>
+
+      <!-- Huy hiệu trạng thái -->
+      <div class="status-badge active" id="status-badge">
+        <span class="dot"></span>
+        <span id="status-text">ĐANG BẬT BẢO VỆ</span>
+      </div>
+
+      <!-- Thẻ thông tin -->
+      <div class="info-card">
+        <div class="info-title">Ẩn Trạng Thái Xem Story</div>
+        <div class="platform-tags">
+          <span class="tag"><i class="fa-brands fa-facebook"></i> Facebook</span>
+          <span class="tag"><i class="fa-brands fa-instagram"></i> Instagram</span>
+        </div>
+        <div class="info-hint">
+          <i class="fa-solid fa-rotate-right"></i> Nhấn F5 trên trang để áp dụng thay đổi
+        </div>
+      </div>
+    </div>
+
+    <!-- Thanh chân trang -->
+    <div class="footer">
+      <button title="Trang cá nhân GitHub"><i class="fa-brands fa-github"></i></button>
+      <button title="Mã nguồn dự án"><i class="fa-solid fa-code"></i></button>
+      <button title="Trang Facebook tác giả"><i class="fa-brands fa-facebook"></i></button>
+      <button title="Kiểm tra bản cập nhật" id="update-button"><i class="fas fa-arrow-alt-circle-down"></i></button>
+    </div>
+  </div>
+</body>
+<script src="popup.js"></script>
+
+</html>
