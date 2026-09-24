@@ -1,0 +1,55 @@
+{
+  "manifest_version": 3,
+  "name": " Ẩn Trạng Thái Xem Story",
+  "description": "Ẩn trạng thái 'đã xem' khi xem Story trên Facebook và Instagram với công tắc đơn giản.",
+  "version": "1.0.1",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.facebook.com/*",
+        "https://*.instagram.com/*"
+      ],
+      "js": [
+        "scripts/inject.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "scripts/unseen.js"
+      ],
+      "matches": [
+        "https://*.facebook.com/*",
+        "https://*.instagram.com/*"
+      ]
+    }
+  ],
+  "permissions": [
+    "storage",
+    "scripting",
+    "activeTab",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://*.facebook.com/*",
+    "https://*.instagram.com/*",
+    "https://raw.githubusercontent.com/*"
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  }
+}
